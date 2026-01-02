@@ -16,10 +16,13 @@ function mooc_login(username,password,callback) {
             callback();
         }
     }
+
+    
+    const sendData = `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+    
     xhttp.open("POST","https://ahslaaks.users.cs.helsinki.fi/mooc/login.php",true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("username="+encodeURIComponent(username)+"&"+
-               "password="+encodeURIComponent(password));
+    xhttp.send(sendData);
 }
 
 function mooc_logout(callback) {
@@ -68,26 +71,25 @@ function quizzes_send(task,sql,result,callback) {
                "data="+encodeURIComponent(sql));
 }
 
-function quizzes_answer(task,callback) {
+function quizzes(task, callback, url) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             callback(this.responseText);
         }
     }
-    xhttp.open("GET","https://ahslaaks.users.cs.helsinki.fi/mooc/sql_answer.php?token="+mooc_token+"&task="+task,true);
+    xhttp.open("GET", url, true);
     xhttp.send();
 }
 
+function quizzes_answer(task,callback) {
+    const url = `https://ahslaaks.users.cs.helsinki.fi/mooc/sql_answer.php?token=${mooc_token}&task=${task}`;
+    quizzes(task, callback, url)
+}
+
 function quizzes_model(task,callback) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            callback(this.responseText);
-        }
-    }
-    xhttp.open("GET","https://ahslaaks.users.cs.helsinki.fi/mooc/sql_model.php?token="+mooc_token+"&task="+task,true);
-    xhttp.send();
+    const url = `https://ahslaaks.users.cs.helsinki.fi/mooc/sql_model.php?token=${mooc_token}&task=${task}`;
+    quizzes(task, callback, url)
 }
 
 if (sessionStorage.getItem("mooc_token")) {
